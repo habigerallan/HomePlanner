@@ -34,7 +34,9 @@ builder.Services.AddSingleton<TokenGenerator>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
+builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

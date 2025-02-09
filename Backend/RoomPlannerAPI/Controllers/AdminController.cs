@@ -20,7 +20,7 @@ public class AdminController(IAdminService adminService, TokenGenerator tokenGen
     {
         var admin = await _adminService.CreateAdmin(createAccountDTO);
         if (admin == null)
-            return BadRequest("Account creation failed.");
+            return BadRequest("Admin creation failed.");
 
         return Ok(admin);
     }
@@ -31,7 +31,7 @@ public class AdminController(IAdminService adminService, TokenGenerator tokenGen
     {
         bool isDeleted = await _adminService.DeleteAdmin(adminId);
         if (!isDeleted)
-            return NotFound("Account not found.");
+            return NotFound("Admin not found.");
 
         return NoContent();
     }

@@ -17,7 +17,7 @@ BEGIN TRY
         LastName NVARCHAR(255) NULL,
         PreferredName NVARCHAR(255) NULL,
         PhoneNumber NVARCHAR(20) NULL,
-        Email NVARCHAR(255) UNIQUE NOT NULL
+        Email NVARCHAR(255) NULL
     );
 
     CREATE TABLE Admin (
@@ -37,7 +37,6 @@ BEGIN TRY
         ProfileID INT NULL, 
         CONSTRAINT FK_Account_Profile FOREIGN KEY (ProfileID) REFERENCES Profile(ProfileID) ON DELETE SET NULL
     );
-
 
     CREATE TABLE House (
         HouseID INT IDENTITY(1,1) PRIMARY KEY,

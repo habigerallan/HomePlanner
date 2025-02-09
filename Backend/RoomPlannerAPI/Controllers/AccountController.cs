@@ -37,7 +37,7 @@ public class AccountController(IAccountService accountService, TokenGenerator to
     }
 
     [HttpGet("{accountId}")]
-    [Authorize(Roles = "Admin,User")]
+    [Authorize]
     public async Task<IActionResult> GetAccount(int accountId)
     {
         var account = await _accountService.GetAccount(accountId);
@@ -45,8 +45,8 @@ public class AccountController(IAccountService accountService, TokenGenerator to
             return NotFound("Account not found.");
 
         var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (userRole == "User" && userIdClaim != account.AccountID.ToString())
+        var usernameClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userRole == "User" && usernameClaim != account.Username)
             return Forbid("You can only access your own account.");
 
         return Ok(account);

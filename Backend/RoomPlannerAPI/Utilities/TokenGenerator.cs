@@ -69,4 +69,3 @@ public class TokenGenerator(IConfiguration configuration)
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }
-

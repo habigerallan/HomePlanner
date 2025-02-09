@@ -31,4 +31,3 @@ public static class PasswordHasher
         return computedHash == storedHash;
     }
 }
-

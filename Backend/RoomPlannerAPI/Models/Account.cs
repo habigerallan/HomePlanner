@@ -8,4 +8,3 @@ public class Account
     public string PasswordSalt { get; set; } = string.Empty;
     public int? ProfileID { get; set; }
 }
-
