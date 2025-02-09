@@ -15,7 +15,7 @@ public class AccountController(IAccountService accountService, TokenGenerator to
     private readonly TokenGenerator _tokenGenerator = tokenGenerator;
 
     [HttpPost("create")]
-    [Authorize(Roles = "Admin")]
+    [AllowAnonymous]
     public async Task<IActionResult> CreateAccount([FromBody] CreateAccountDTO createAccountDTO)
     {
         var account = await _accountService.CreateAccount(createAccountDTO);
