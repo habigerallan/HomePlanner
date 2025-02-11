@@ -1,7 +1,5 @@
 using Microsoft.Data.SqlClient;
-using RoomPlannerAPI.DTO;
 using RoomPlannerAPI.Models;
-using RoomPlannerAPI.Utilities;
 using RoomPlannerAPI.Services.Interfaces;
 
 namespace RoomPlannerAPI.Services;

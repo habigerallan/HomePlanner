@@ -22,9 +22,6 @@ public class ProfileController(IProfileService profileService) : ControllerBase
     [Authorize]
     public async Task<IActionResult> CreateProfile([FromBody] Profile profileRequest)
     {
-        if (!UserHasRole("User"))
-            return Forbid("Access denied. User role required.");
-
         var accountUsername = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
 
         if (profileRequest == null ||
@@ -75,9 +72,6 @@ public class ProfileController(IProfileService profileService) : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetProfile(int profileId)
     {
-        if (!UserHasRole("User"))
-            return Forbid("Access denied. User role required.");
-
         var accountUsername = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
 
         var profile = UserHasRole("Admin")
@@ -94,9 +88,6 @@ public class ProfileController(IProfileService profileService) : ControllerBase
     [Authorize]
     public async Task<IActionResult> ModifyProfile(int profileId, [FromBody] ModifyProfileDTO profileRequest)
     {
-        if (!UserHasRole("User"))
-            return Forbid("Access denied. User role required.");
-
         var accountUsername = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
         var profile = new Profile
         {
