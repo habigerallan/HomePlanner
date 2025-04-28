@@ -12,6 +12,19 @@ public class HouseService(IConfiguration configuration) : IHouseService
     public async Task<House?> CreateHouse(string name)
     {
         using SqlConnection conn = new(_connectionString);
+
+        string checkQuery = @"
+        SELECT COUNT(*) 
+        FROM HouseAccount HA
+        INNER JOIN Account A ON HA.AccountID = A.AccountID
+        WHERE A.name = @name;";
+
+        using SqlCommand checkCmd = new(checkQuery, conn);
+        checkCmd.Parameters.AddWithValue("@name", name);
+
+        var isAssociated = (int?)await checkCmd.ExecuteScalarAsync() ?? 0;
+        if (isAssociated == 0) return null;
+
         string insertQuery = @"
         INSERT INTO House (Name)
         OUTPUT INSERTED.HouseID, INSERTED.Name
@@ -137,6 +150,99 @@ public class HouseService(IConfiguration configuration) : IHouseService
         }
 
         return null;
+    }
+
+    public async Task<bool> AddUserToHouse(int houseId, string newUser, string requestingUser) {
+        using SqlConnection conn = new(_connectionString);
+        await conn.OpenAsync();
+
+        string checkQuery = @"
+        SELECT COUNT(*) 
+        FROM HouseAccount HA
+        INNER JOIN Account A ON HA.AccountID = A.AccountID
+        WHERE HA.HouseID = @HouseID AND A.Username = @requestingUser;";
+
+        using SqlCommand checkCmd = new(checkQuery, conn);
+        checkCmd.Parameters.AddWithValue("@HouseID", houseId);
+        checkCmd.Parameters.AddWithValue("@requestingUser", requestingUser);
+
+        var isAssociated = (int?)await checkCmd.ExecuteScalarAsync() ?? 0;
+        if (isAssociated == 0) return false;
+
+        string checkHouselessQuery = @"
+        SELECT COUNT(*) 
+        FROM HouseAccount HA
+        INNER JOIN Account A ON HA.AccountID = A.AccountID
+        WHERE A.Username = @newUser;";
+
+        using SqlCommand checkCmd2 = new(checkHouselessQuery, conn);
+        checkCmd2.Parameters.AddWithValue("@newUser", newUser);
+
+        var hasHouse = (int?)await checkCmd2.ExecuteScalarAsync() ?? 0;
+        if (hasHouse == 0) return false;
+
+        string updateQuery = @"
+        INSERT INTO HouseAccount (Name, HouseID)
+        SET Name = @Name
+        SET HouseID = @HouseID;";
+
+        using SqlCommand updateCmd = new(updateQuery, conn);
+        updateCmd.Parameters.AddWithValue("@HouseID", houseId);
+        updateCmd.Parameters.AddWithValue("@Name", name);
+
+        using SqlDataReader reader = await updateCmd.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public async Task<bool> RemoveUserFromHouse(int houseId, string userToRemove, string requestingUser) {
+        using SqlConnection conn = new(_connectionString);
+        await conn.OpenAsync();
+
+        string checkQuery = @"
+        SELECT COUNT(*) 
+        FROM HouseAccount HA
+        INNER JOIN Account A ON HA.AccountID = A.AccountID
+        WHERE HA.HouseID = @HouseID AND A.Username = @requestingUser;";
+
+        using SqlCommand checkCmd = new(checkQuery, conn);
+        checkCmd.Parameters.AddWithValue("@HouseID", houseId);
+        checkCmd.Parameters.AddWithValue("@requestingUser", requestingUser);
+
+        var isAssociated = (int?)await checkCmd.ExecuteScalarAsync() ?? 0;
+        if (isAssociated == 0) return false;
+
+        string checkHouselessQuery = @"
+        SELECT COUNT(*) 
+        FROM HouseAccount HA
+        INNER JOIN Account A ON HA.AccountID = A.AccountID
+        WHERE HA.HouseID = @HouseID AND A.Username = @newUser;";
+
+        using SqlCommand checkCmd2 = new(checkHouselessQuery, conn);
+        checkCmd.Parameters.AddWithValue("@HouseID", houseId);
+        checkCmd2.Parameters.AddWithValue("@newUser", userToRemove);
+
+        var hasHouse = (int?)await checkCmd2.ExecuteScalarAsync() ?? 0;
+        if (hasHouse == 0) return false;
+
+        string updateQuery = @"
+        DELETE FROM HouseAccount
+        WHERE Name = @Name;";
+
+        using SqlCommand updateCmd = new(updateQuery, conn);
+        updateCmd.Parameters.AddWithValue("@Name", name);
+
+        using SqlDataReader reader = await updateCmd.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public async Task<bool> AdminDeleteHouse(int houseId)

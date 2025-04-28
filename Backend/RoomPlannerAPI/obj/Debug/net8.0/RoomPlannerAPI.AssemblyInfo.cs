@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RoomPlannerAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a0ea4c87729216f8d148864fb0686cc813292c0f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+42429cca8b552827d2edcb7632244fe50dc4b96b")]
 [assembly: System.Reflection.AssemblyProductAttribute("RoomPlannerAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RoomPlannerAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -9,9 +9,10 @@ namespace RoomPlannerAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class AccountController(IAccountService accountService, TokenGenerator tokenGenerator) : ControllerBase
+public class AccountController(IAccountService accountService, IProfileService profileService, TokenGenerator tokenGenerator) : ControllerBase
 {
     private readonly IAccountService _accountService = accountService;
+    private readonly IProfileService _profileService = profileService;
     private readonly TokenGenerator _tokenGenerator = tokenGenerator;
 
     [HttpPost("create")]
