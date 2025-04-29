@@ -17,7 +17,7 @@ BEGIN TRY
         PasswordHash NVARCHAR(255) NOT NULL, 
         PasswordSalt NVARCHAR(255) NOT NULL, 
         ProfileID INT NULL, 
-        CONSTRAINT FK_Admin_Profile FOREIGN KEY (ProfileID) REFERENCES Profile(ProfileID) ON DELETE SET NULL
+        CONSTRAINT FK_Admin_Profile FOREIGN KEY (ProfileID) REFERENCES Profile(ProfileID) ON DELETE CASCADE
     );
 
     CREATE TABLE Account (
@@ -25,8 +25,8 @@ BEGIN TRY
         Username NVARCHAR(255) NOT NULL UNIQUE, 
         PasswordHash NVARCHAR(255) NOT NULL, 
         PasswordSalt NVARCHAR(255) NOT NULL, 
-        ProfileID INT NULL, 
-        CONSTRAINT FK_Account_Profile FOREIGN KEY (ProfileID) REFERENCES Profile(ProfileID) ON DELETE SET NULL
+        ProfileID INT NOT NULL, 
+        CONSTRAINT FK_Account_Profile FOREIGN KEY (ProfileID) REFERENCES Profile(ProfileID) ON DELETE CASCADE
     );
 
     CREATE TABLE House (

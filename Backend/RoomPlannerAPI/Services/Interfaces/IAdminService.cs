@@ -4,8 +4,10 @@ using RoomPlannerAPI.Models;
 namespace RoomPlannerAPI.Services.Interfaces;
 public interface IAdminService
 {
-    Task<Admin?> CreateAdmin(CreateAccountDTO createAccountDTO);
-    Task<bool> DeleteAdmin(int adminId);
-    Task<Admin?> GetAdmin(int adminId);
-    Task<bool> ValidateAdmin(string username, string password);
+    Task<Admin?> Create(CreateAdminDTO createAdminDTO);
+    Task<Admin?> Read(ReadAdminDTO readAdminDTO);
+    Task<Admin?> Update(UpdateAdminDTO updateAdminDTO);
+    Task<bool> Delete(DeleteAdminDTO deleteAdminDTO);
+
+    Task<int> Login(LoginAdminDTO loginAdminDTO);
 }

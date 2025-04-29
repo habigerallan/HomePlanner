@@ -16,16 +16,38 @@ public class AdminController(IAdminService adminService, TokenGenerator tokenGen
 
     [HttpPost("create")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> CreateAdmin([FromBody] CreateAccountDTO createAccountDTO)
+    public async Task<IActionResult> CreateAdmin([FromBody] CreateAdminDTO createAdminDTO)
     {
-        var admin = await _adminService.CreateAdmin(createAccountDTO);
-        if (admin == null)
+        Admin admin = await _adminService.CreateAdmin(createAdminDTO);
+
+        if (!admin)
+        {
             return BadRequest("Admin creation failed.");
+        }
 
         return Ok(admin);
     }
 
-    [HttpDelete("{adminId}")]
+    [HttpGet("{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> ReadAdmin(ReadAdminDTO readAdminDTO)
+    {
+        var admin = await _adminService.GetAdmin(readAdminDTO);
+
+        if (!admin)
+        {
+            return NotFound("Admin not found.");
+        }
+
+        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userRole == "User" && userIdClaim != admin.AdminID.ToString())
+            return Forbid("You can only access your own admin.");
+
+        return Ok(admin);
+    }
+
+    [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteAdmin(int adminId)
     {
@@ -36,32 +58,19 @@ public class AdminController(IAdminService adminService, TokenGenerator tokenGen
         return NoContent();
     }
 
-    [HttpGet("{adminId}")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> GetAdmin(int adminId)
-    {
-        var admin = await _adminService.GetAdmin(adminId);
-        if (admin == null)
-            return NotFound("Admin not found.");
-
-        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (userRole == "User" && userIdClaim != admin.AdminID.ToString())
-            return Forbid("You can only access your own admin.");
-
-        return Ok(admin);
-    }
-
     [HttpPost("login")]
     [AllowAnonymous]
-    public async Task<IActionResult> Login([FromBody] CreateAccountDTO loginDTO)
+    public async Task<IActionResult> LoginAdmin([FromBody] CreateAccountDTO loginDTO)
     {
-        bool isValid = await _adminService.ValidateAdmin(loginDTO.Username, loginDTO.Password);
-        if (!isValid)
+        int userID = await _adminService.Login(loginDTO);
+
+        if (!userID)
+        {
             return Unauthorized("Invalid username or password.");
+        }
 
         string token = _tokenGenerator.GenerateAdminToken(loginDTO.Username);
 
-        return Ok(new { Token = token });
+        return Ok({ Token = token });
     }
 }

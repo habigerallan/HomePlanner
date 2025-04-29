@@ -9,7 +9,7 @@ public class TokenGenerator(IConfiguration configuration)
 {
     private readonly IConfiguration _configuration = configuration;
 
-    public string GenerateUserToken(string username)
+    public string GenerateUserToken(string username, int userID)
     {
         string secretKey = _configuration["JwtSettings:SecretKey"]
             ?? throw new InvalidOperationException("JwtSettings:SecretKey is missing.");
@@ -25,7 +25,7 @@ public class TokenGenerator(IConfiguration configuration)
         {
             new Claim(ClaimTypes.Name, username),
             new Claim(ClaimTypes.Role, "User"),
-            new Claim(ClaimTypes.NameIdentifier, username)
+            new Claim(ClaimTypes.Sid, userID)
         };
 
         var token = new JwtSecurityToken(
@@ -39,7 +39,7 @@ public class TokenGenerator(IConfiguration configuration)
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public string GenerateAdminToken(string username)
+    public string GenerateAdminToken(string username, int userID)
     {
         string secretKey = _configuration["JwtSettings:SecretKey"]
             ?? throw new InvalidOperationException("JwtSettings:SecretKey is missing.");
@@ -53,9 +53,9 @@ public class TokenGenerator(IConfiguration configuration)
 
         var claims = new[]
         {
-            new Claim(ClaimTypes.Name, username),
+            new Claim(ClaimTypes.NameIdentifier, username),
             new Claim(ClaimTypes.Role, "Admin"),
-            new Claim(ClaimTypes.NameIdentifier, username)
+            new Claim(ClaimTypes.Sid, userID)
         };
 
         var token = new JwtSecurityToken(
